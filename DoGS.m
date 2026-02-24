@@ -8,3 +8,5 @@ State = struct;
 State = ConfigureConstants(State);
 %% 5. Reset the sub-struct State.Variables.
 State = ResetVariables(State);
+%% 6. Build the configuration window.
+State = BuildConfigurationWindow(State);
