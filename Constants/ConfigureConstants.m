@@ -1,6 +1,6 @@
 %% Function: Configure the sub-struct State.Constants.
 function State = ConfigureConstants(State)
-    %% 1. Declare the sub-struct State.Constants.
+    %% 1. Clear the sub-struct State.Constants.
     State.Constants = struct;
     %% 2. Configure the input and output properties.
     State = ConfigureInputAndOutput(State);
