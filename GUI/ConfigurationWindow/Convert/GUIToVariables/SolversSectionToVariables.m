@@ -9,7 +9,7 @@ function State = SolversSectionToVariables(State, PreviousSolvers)
         RowRequirement = Data{RowIndex, 2};
         %% 2B. Convert the value from a string to a numeric value.
         Data{RowIndex, 3} = str2double(Data{RowIndex, 3});
-        %% 2C. Determine the criteria associated with the row in question.
+        %% 2C. Determine the criteria associated with the row.
         switch RowName
             case {'ConductanceWeight', 'SeebeckWeight'}
                 RowCriteria = 'NonNegative';
@@ -35,9 +35,9 @@ function State = SolversSectionToVariables(State, PreviousSolvers)
     %% 3. Validate Any.NumberOfSavedSolutions against fmincon.NumberOfStartPoints, if applicable.
     if(ismember('fmincon', State.Variables.Options.Solvers))
         if(State.Variables.Solvers.Any.NumberOfSavedSolutions > State.Variables.Solvers.fmincon.NumberOfStartPoints)
-            warning('Any.NumberOfSavedSolutions > fmincon.NumberOfStartPoints. Setting Any.NumberOfSavedSolutions to fmincon.NumberOfStartPoints.');
+            warning('Any.NumberOfSavedSolutions > fmincon.NumberOfStartPoints. Setting Any.NumberOfSavedSolutions = fmincon.NumberOfStartPoints.');
             State.Variables.Solvers.Any.NumberOfSavedSolutions = State.Variables.Solvers.fmincon.NumberOfStartPoints;
-            Data{strcmp(Data(:, 1), 'NumberOfSavedSolutions') & strcmp(Data(:, 2), 'Any'), 3} = num2str(State.Variables.Solvers.Any.NumberOfSavedSolutions);
+            Data{strcmp(Data(:, 1), 'NumberOfSavedSolutions'), 3} = num2str(State.Variables.Solvers.Any.NumberOfSavedSolutions);
         end
     end
     %% 4. Update the table data.
