@@ -1,6 +1,6 @@
 %% Function: Validate a scalar.
 function Value = ValidateScalar(Value, Criteria, Name, PreviousValue)
-    %% 1. Determine whether a previous value is defined.
+    %% 1. Determine whether a previous value has been specified.
     HasPreviousValue = (nargin >= 4 && ~isempty(PreviousValue));
     FailureMessage = '';
     %% 2. Validate that the input is a finite scalar.
