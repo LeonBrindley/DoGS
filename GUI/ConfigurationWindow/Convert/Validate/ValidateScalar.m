@@ -39,7 +39,7 @@ function Value = ValidateScalar(Value, Criteria, Name, PreviousValue)
     %% 4. If the scalar is invalid, revert to the previous value or throw an error.
     if(~isempty(FailureMessage))
         if(~HasPreviousValue)
-            error('%s %s No previous value is defined.', Name, FailureMessage);
+            error('%s %s No previous value has been specified.', Name, FailureMessage);
         else
             warning('%s %s Switched to previous value.', Name, FailureMessage);
             Value = PreviousValue;
