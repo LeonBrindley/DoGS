@@ -27,7 +27,12 @@ function State = GridSectionToVariables(State, PreviousGrid)
     end
     %% 4. Validate the Δε increment against the Δε maximum and the Δε minimum.
     if(State.Variables.Grid.Increment{1} > ((State.Variables.Grid.Maximum{1} - State.Variables.Grid.Minimum{1}) / 100))
-        warning('Δε increment > (Δε maximum - Δε minimum) / 100. Switched to previous value.');
-        State.Variables.Grid.Increment = PreviousGrid.Increment;
+        if(PreviousGrid.Increment{1} <= ((State.Variables.Grid.Maximum{1} - State.Variables.Grid.Minimum{1}) / 100))
+            warning('Δε increment > (Δε maximum - Δε minimum) / 100. Switched to previous value.');
+            State.Variables.Grid.Increment = PreviousGrid.Increment;
+        else
+            warning('Δε increment > (Δε maximum - Δε minimum) / 100. Switched to (Δε maximum - Δε minimum) / 100.');
+            State.Variables.Grid.Increment{1} = (State.Variables.Grid.Maximum{1} - State.Variables.Grid.Minimum{1}) / 100;
+        end
     end
 end
