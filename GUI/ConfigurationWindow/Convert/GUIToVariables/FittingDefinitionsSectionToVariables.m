@@ -13,7 +13,11 @@ function State = FittingDefinitionsSectionToVariables(State, PreviousFittingDefi
         Data{RowIndex, 5} = str2double(Data{RowIndex, 5});
         Data{RowIndex, 6} = str2double(Data{RowIndex, 6});
         %% 2C. Validate the row.
-        Data(RowIndex, :) = ValidateFittingDefinition(Data(RowIndex, :), PreviousFittingDefinitions);
+        if(isfield(PreviousFittingDefinitions, RowRequirement) && isfield(PreviousFittingDefinitions.(RowRequirement), RowName))
+            Data(RowIndex, :) = ValidateFittingDefinition(Data(RowIndex, :), PreviousFittingDefinitions.(RowRequirement).(RowName));
+        else
+            Data(RowIndex, :) = ValidateFittingDefinition(Data(RowIndex, :));
+        end
         %% 2D. Write the row.
         State.Variables.FittingDefinitions.(RowRequirement).(RowName) = Data(RowIndex, 3 : 7);
         %% 2E. Convert the scale, initial value, lower bound and upper bound from numeric values to strings.
