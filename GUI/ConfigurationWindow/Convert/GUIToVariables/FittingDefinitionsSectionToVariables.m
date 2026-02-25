@@ -15,7 +15,7 @@ function State = FittingDefinitionsSectionToVariables(State, PreviousFittingDefi
         %% 2C. Validate the row.
         Data{RowIndex} = ValidateFittingDefinition(Data{RowIndex}, PreviousFittingDefinitions);
         %% 2D. Write the row.
-        State.Variables.FittingDefinitions.(RowRequirement).(RowName) = Data{RowIndex, 3 : 6};
+        State.Variables.FittingDefinitions.(RowRequirement).(RowName) = Data{RowIndex, 3 : 7};
         %% 2E. Convert the scale, initial value, lower bound and upper bound from numeric values to strings.
         Data{RowIndex, 3} = num2str(Data{RowIndex, 3});
         Data{RowIndex, 4} = num2str(Data{RowIndex, 4});
