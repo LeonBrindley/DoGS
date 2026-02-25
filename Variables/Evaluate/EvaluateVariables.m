@@ -6,4 +6,6 @@ function State = EvaluateVariables(State)
     State = EvaluateGrid(State);
     %% 3. Evaluate the knots for the pchip model.
     State = EvaluateKnots(State);
+    %% 4. Evaluate the number of combinations.
+    State.Variables.NumCombinations = prod(State.Variables.Options.NumSelectedOptions);
 end
