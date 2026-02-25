@@ -7,27 +7,20 @@ function State = FittingDefinitionsSectionToVariables(State, PreviousFittingDefi
         %% 2A. Read the name and requirement.
         RowName = Data{RowIndex, 1};
         RowRequirement = Data{RowIndex, 2};
-        %% 2B. Read the scale, initial value, lower bound and upper bound.
-        RowValues = Data(RowIndex, 3 : 6);
-        %% 2C. Read the unit.
-        RowUnit = Data{RowIndex, 7};
-        %% 2D. Parse the previous row.
-        PreviousRow = [RowValues, {RowUnit}];
-        if(isfield(PreviousFittingDefinitions, RowRequirement) && isfield(PreviousFittingDefinitions.(RowRequirement), RowName))
-            PreviousRow = PreviousFittingDefinitions.(RowRequirement).(RowName);
-        end
-        %% 2E. Validate the new row.
-        NewRow = ValidateFittingDefinition([RowValues, {RowUnit}], PreviousRow, RowRequirement, RowName);
-        %% 2F. Write the new row.
-        State.Variables.FittingDefinitions.(RowRequirement).(RowName) = NewRow;
-        %% 2G. Compose the table data.
-        Data(RowIndex, 3 : 6) = NewRow(1 : 4);
-        for idxColumn = 3 : 6
-            if(isnumeric(Data{RowIndex, idxColumn}) && ~isscalar(Data{RowIndex, idxColumn}))
-                Data{RowIndex, idxColumn} = mat2str(Data{RowIndex, idxColumn});
-            end
-        end
-        Data{RowIndex, 7} = NewRow{5};
+        %% 2B. Convert the scale, initial value, lower bound and upper bound from strings to numeric values.
+        Data{RowIndex, 3} = str2double(Data{RowIndex, 3});
+        Data{RowIndex, 4} = str2double(Data{RowIndex, 4});
+        Data{RowIndex, 5} = str2double(Data{RowIndex, 5});
+        Data{RowIndex, 6} = str2double(Data{RowIndex, 6});
+        %% 2C. Validate the row.
+        Data{RowIndex} = ValidateFittingDefinition(Data{RowIndex}, PreviousFittingDefinitions);
+        %% 2D. Write the row.
+        State.Variables.FittingDefinitions.(RowRequirement).(RowName) = Data{RowIndex, 3 : 6};
+        %% 2E. Convert the scale, initial value, lower bound and upper bound from numeric values to strings.
+        Data{RowIndex, 3} = num2str(Data{RowIndex, 3});
+        Data{RowIndex, 4} = num2str(Data{RowIndex, 4});
+        Data{RowIndex, 5} = num2str(Data{RowIndex, 5});
+        Data{RowIndex, 6} = num2str(Data{RowIndex, 6});
     end
     %% 3. Update the table data.
     State.ConfigurationWindow.FittingDefinitionsSection.Table.Data = Data;
