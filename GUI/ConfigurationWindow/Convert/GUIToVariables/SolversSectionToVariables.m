@@ -27,16 +27,18 @@ function State = SolversSectionToVariables(State, PreviousSolvers)
         else
             Data(RowIndex, 3) = ValidateScalar(Data(RowIndex, 3), RowCriteria, sprintf('%s.%s', RowRequirement, RowName));
         end
-        %% 2E. Write the Row.
+        %% 2E. Write the row.
         State.Variables.Solvers.(RowRequirement).(RowName) = Data(RowIndex, 3);
         %% 2F. Convert the value from a numeric value to a string.
         Data{RowIndex, 3} = num2str(Data{RowIndex, 3});
     end
     %% 3. Validate NumberOfSavedSolutions against NumberOfStartPoints if 'fmincon' is explicitly specified.
-    if(ismember('fmincon', State.Variables.Options.Solvers) && (State.Variables.Solvers.Any.NumberOfSavedSolutions > State.Variables.Solvers.fmincon.NumberOfStartPoints))
-        warning('NumberOfSavedSolutions > NumberOfStartPoints. Setting NumberOfSavedSolutions = NumberOfStartPoints for Solver = Any.');
-        State.Variables.Solvers.Any.NumberOfSavedSolutions = State.Variables.Solvers.fmincon.NumberOfStartPoints;
+    if(ismember('fmincon', State.Variables.Options.Solvers))
+        if(State.Variables.Solvers.Any.NumberOfSavedSolutions > State.Variables.Solvers.fmincon.NumberOfStartPoints)
+            warning('Any.NumberOfSavedSolutions > fmincon.NumberOfStartPoints. Set Any.NumberOfSavedSolutions to fmincon.NumberOfStartPoints.');
+            State.Variables.Solvers.Any.NumberOfSavedSolutions = State.Variables.Solvers.fmincon.NumberOfStartPoints;
+        end
     end
-    %% 4. Update the Table Data.
+    %% 4. Update the table data.
     State.ConfigurationWindow.SolversSection.Table.Data = Data;
 end
