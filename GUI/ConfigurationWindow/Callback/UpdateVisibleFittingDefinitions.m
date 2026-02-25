@@ -1,18 +1,13 @@
 %% Function: Update the visible fitting definitions.
 function State = UpdateVisibleFittingDefinitions(State)
-    %% 1. Extract the table data.
+    %% 1. Fetch the current table.
     Table = State.ConfigurationWindow.FittingDefinitionsSection.Table;
-    if(isempty(Table.UserData))
-        Table.UserData = struct('FullData', {Table.Data}, 'VisibleIndices', {(1 : size(Table.Data, 1))'});
-    end
-    %% 2. Update the cached data.
-    Table.UserData.FullData(Table.UserData.VisibleIndices, :) = Table.Data;
-    %% 3. Determine the visible requirements.
-    VisibleRequirements = [{'Any'}, State.Variables.Options.Models(:)'];
-    if(any(strcmp(State.Variables.Options.GapTypes, 'Soft')))
-        VisibleRequirements = [VisibleRequirements, {'Soft'}];
-    end
-    %% 4. Update the table data.
-    Table.UserData.VisibleIndices = find(ismember(Table.UserData.FullData(:, 2), VisibleRequirements));
-    Table.Data = Table.UserData.FullData(Table.UserData.VisibleIndices, :);
+    %% 2. Save any edits from the old visible rows.
+    Table.UserData.AllRows(Table.UserData.VisibleRowIndices, :) = Table.Data;
+    %% 3. Identify the new visible requirements.
+    VisibleRequirements = [{'Any'}, State.Variables.Options.Models(:)', intersect(State.Variables.Options.GapTypes, {'Soft'})];
+    %% 4. Identify the new visible rows.
+    Table.UserData.VisibleRowIndices = find(ismember(Table.UserData.AllRows(:, 2), VisibleRequirements));
+    %% 5. Update the visible rows.
+    Table.Data = Table.UserData.AllRows(Table.UserData.VisibleRowIndices, :);
 end
