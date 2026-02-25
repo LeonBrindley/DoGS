@@ -7,7 +7,7 @@ function Value = ValidateScalar(Value, Criteria, Name, PreviousValue)
     if(~isscalar(Value) || ~isnumeric(Value) || ~isfinite(Value))
         FailureMessage = 'is not a finite scalar.';
     end
-    %% 3. Enforce any further constraints.
+    %% 2. Enforce any further constraints.
     if(isempty(FailureMessage))
         switch Criteria
             case 'Positive'
@@ -20,29 +20,28 @@ function Value = ValidateScalar(Value, Criteria, Name, PreviousValue)
                 end
             case 'PositiveInteger'
                 if(Value <= 0 || mod(Value, 1) ~= 0)
-                    FailureMessage = 'is not a positive integer.';
+                    FailureMessage = 'must be a positive integer.';
                 end
             case 'NegativeInteger'
                 if(Value >= 0 || mod(Value, 1) ~= 0)
-                    FailureMessage = 'is not a negative integer.';
+                    FailureMessage = 'must be a negative integer.';
                 end
             case 'NonPositive'
                 if(Value > 0)
-                    FailureMessage = 'is not a non-positive scalar.';
+                    FailureMessage = 'must be a non-positive scalar.';
                 end
             case 'NonNegative'
                 if(Value < 0)
-                    FailureMessage = 'is not a non-negative scalar.';
+                    FailureMessage = 'must be a non-negative scalar.';
                 end
         end
     end
-    %% 4. If the scalar is invalid, revert to the previous value or throw an error.
+    %% 3. Use the previous value or throw an error on failure.
     if(~isempty(FailureMessage))
         if(~HasPreviousValue)
             error('%s %s No previous value is defined.', Name, FailureMessage);
-        else
-            warning('%s %s Switched to previous value.', Name, FailureMessage);
-            Value = PreviousValue;
         end
+        warning('%s %s Switched to previous value.', Name, FailureMessage);
+        Value = PreviousValue;
     end
 end
