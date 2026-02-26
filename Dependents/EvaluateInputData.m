@@ -21,7 +21,7 @@ function State = EvaluateInputData(State)
     State.Dependents.Data.Seebeck = cell2mat(DataRows(:, SeebeckColumns));
     %% 4. Evaluate the size of the experimental data for each {Type, Test}.
     State.Dependents.Data.Columns = {DataHeader(VoltageColumn), DataHeader(ConductanceColumns), DataHeader(SeebeckColumns)};
-    State.Dependents.Data.NumVoltages = size(State.Dependents.Data.Voltage);
+    State.Dependents.Data.NumVoltages = numel(State.Dependents.Data.Voltage);
     %% 5. Evaluate the number of combinations of {Type, Test}.
     State.Dependents.Data.NumTypes = numel(State.Dependents.Data.Columns) - 1;
     State.Dependents.Data.NumTests = cellfun(@numel, State.Dependents.Data.Columns(2 : end));
