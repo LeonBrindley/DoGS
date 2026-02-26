@@ -16,6 +16,6 @@ function State = BuildConfigurationWindow(State)
     State = BuildButtonsSection(State);
     %% 7. Read State.Variables into the configuration window data.
     State = VariablesToConfigurationWindow(State);
-    %% 8. Store the state in the figure user data.
+    %% 8. Store State in the configuration window figure user data.
     State.ConfigurationWindow.Figure.UserData = State;
 end
