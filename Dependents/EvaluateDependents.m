@@ -1,4 +1,4 @@
-%% Function: Evalate the sub-struct State.Dependents.
+%% Function: Evaluate the sub-struct State.Dependents.
 function State = EvaluateDependents(State)
     %% 1. Clear the sub-struct State.Dependents.
     State.Dependents = struct;

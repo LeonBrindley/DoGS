@@ -50,7 +50,7 @@ function State = EvaluateInputData(State)
     ChargeTrappingShiftUnit = string(InputData(find(InputLabels == "# Unit", 1), State.Dependents.Data.ChargeTrappingShiftColumns));
     ChargeTrappingShiftUnit(end + 1 : prod(State.Dependents.Data.ChargeTrappingShiftSize)) = "";
     ChargeTrappingShiftUnit = reshape(ChargeTrappingShiftUnit, fliplr(State.Dependents.Data.ChargeTrappingShiftSize))';
-    %% 7. Reshape the fitting definitions for the charge trapping shift.
+    %% 8. Reshape the fitting definitions for the charge trapping shift.
     State.Dependents.FittingDefinitions.ChargeTrappingShift = reshape(arrayfun(@(ScaleValue, InitialValue, LowerBound, UpperBound, Unit){ScaleValue, InitialValue, LowerBound, UpperBound, Unit}, ...
         ChargeTrappingShiftScale, ChargeTrappingShiftInitialValue, ChargeTrappingShiftLowerBound, ChargeTrappingShiftUpperBound, ChargeTrappingShiftUnit, 'UniformOutput', false), [], 1);
 end
