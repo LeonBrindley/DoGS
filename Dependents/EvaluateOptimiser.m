@@ -9,12 +9,7 @@ function State = EvaluateOptimiser(State)
     end
     Requirements{end + 1} = State.Dependents.Model;
     %% 3. Initialise storage for the parsed fitting definitions.
-    Names = {};
-    Scales = {};
-    InitialValues = {};
-    LowerBounds = {};
-    UpperBounds = {};
-    Units = {};
+    Parsed = struct('Names', {{}}, 'Scales', {{}}, 'InitialValues', {{}}, 'LowerBounds', {{}}, 'UpperBounds', {{}}, 'Units', {{}});
     %% 4. Parse the fitting definitions selected by the current requirements.
     for idxRequirement = 1 : numel(Requirements)
         Definition = State.Variables.FittingDefinitions.(Requirements{idxRequirement});
@@ -22,36 +17,35 @@ function State = EvaluateOptimiser(State)
         for idxName = 1 : numel(ParameterNames)
             Values = Definition.(ParameterNames{idxName});
             if(isnumeric(Values{1}) && ~isscalar(Values{1}))
-                Names{end + 1, 1} = arrayfun(@(idxElement) sprintf('%s(%d)', ParameterNames{idxName}, idxElement), (1 : numel(Values{1}))', 'UniformOutput', false);
-                Scales{end + 1, 1} = Values{1}(:);
-                InitialValues{end + 1, 1} = Values{2}(:);
-                LowerBounds{end + 1, 1} = Values{3}(:);
-                UpperBounds{end + 1, 1} = Values{4}(:);
-                Units{end + 1, 1} = repmat({Values{5}}, numel(Values{1}), 1);
+                Parsed.Names{end + 1, 1} = arrayfun(@(idxElement) sprintf('%s(%d)', ParameterNames{idxName}, idxElement), (1 : numel(Values{1}))', 'UniformOutput', false);
+                Parsed.Scales{end + 1, 1} = Values{1}(:);
+                Parsed.InitialValues{end + 1, 1} = Values{2}(:);
+                Parsed.LowerBounds{end + 1, 1} = Values{3}(:);
+                Parsed.UpperBounds{end + 1, 1} = Values{4}(:);
+                Parsed.Units{end + 1, 1} = repmat({Values{5}}, numel(Values{1}), 1);
             else
-                Names{end + 1, 1} = ParameterNames(idxName);
-                Scales{end + 1, 1} = Values{1};
-                InitialValues{end + 1, 1} = Values{2};
-                LowerBounds{end + 1, 1} = Values{3};
-                UpperBounds{end + 1, 1} = Values{4};
-                Units{end + 1, 1} = Values(5);
+                Parsed.Names{end + 1, 1} = ParameterNames(idxName);
+                Parsed.Scales{end + 1, 1} = Values{1};
+                Parsed.InitialValues{end + 1, 1} = Values{2};
+                Parsed.LowerBounds{end + 1, 1} = Values{3};
+                Parsed.UpperBounds{end + 1, 1} = Values{4};
+                Parsed.Units{end + 1, 1} = Values(5);
             end
         end
     end
     %% 5. Append the charge trapping shift fitting definitions.
-    Names{end + 1, 1} = arrayfun(@(idxShift) sprintf('ChargeTrappingShift(%d)', idxShift), (1 : State.Dependents.Data.ChargeTrappingShiftCount)', 'UniformOutput', false);
-    Scales{end + 1, 1} = cellfun(@(Parameter) Parameter{1}, State.Dependents.FittingDefinitions.ChargeTrappingShift);
-    InitialValues{end + 1, 1} = cellfun(@(Parameter) Parameter{2}, State.Dependents.FittingDefinitions.ChargeTrappingShift);
-    LowerBounds{end + 1, 1} = cellfun(@(Parameter) Parameter{3}, State.Dependents.FittingDefinitions.ChargeTrappingShift);
-    UpperBounds{end + 1, 1} = cellfun(@(Parameter) Parameter{4}, State.Dependents.FittingDefinitions.ChargeTrappingShift);
-    Units{end + 1, 1} = cellfun(@(Parameter) Parameter{5}, State.Dependents.FittingDefinitions.ChargeTrappingShift, 'UniformOutput', false);
+    ChargeTrappingShift = State.Dependents.FittingDefinitions.ChargeTrappingShift;
+    Parsed.Names{end + 1, 1} = arrayfun(@(idxShift) sprintf('ChargeTrappingShift(%d)', idxShift), (1 : State.Dependents.Data.ChargeTrappingShiftCount)', 'UniformOutput', false);
+    Parsed.Scales{end + 1, 1} = cellfun(@(Parameter) Parameter{1}, ChargeTrappingShift);
+    Parsed.InitialValues{end + 1, 1} = cellfun(@(Parameter) Parameter{2}, ChargeTrappingShift);
+    Parsed.LowerBounds{end + 1, 1} = cellfun(@(Parameter) Parameter{3}, ChargeTrappingShift);
+    Parsed.UpperBounds{end + 1, 1} = cellfun(@(Parameter) Parameter{4}, ChargeTrappingShift);
+    Parsed.Units{end + 1, 1} = cellfun(@(Parameter) Parameter{5}, ChargeTrappingShift, 'UniformOutput', false);
     %% 6. Write the parsed fitting definitions.
-    State.Dependents.FittingDefinitions.Names = vertcat(Names{:});
-    State.Dependents.FittingDefinitions.Scales = vertcat(Scales{:});
-    State.Dependents.FittingDefinitions.InitialValues = vertcat(InitialValues{:});
-    State.Dependents.FittingDefinitions.LowerBounds = vertcat(LowerBounds{:});
-    State.Dependents.FittingDefinitions.UpperBounds = vertcat(UpperBounds{:});
-    State.Dependents.FittingDefinitions.Units = vertcat(Units{:});
+    ParsedFields = fieldnames(Parsed);
+    for idxField = 1 : numel(ParsedFields)
+        State.Dependents.FittingDefinitions.(ParsedFields{idxField}) = vertcat(Parsed.(ParsedFields{idxField}){:});
+    end
     %% 7. Setup the optimiser options for the current solver.
     State.Dependents.Optimiser.Solver = State.Dependents.Solver;
     State.Dependents.Optimiser.Options.fmincon = optimoptions('fmincon', 'Display', 'iter', 'UseParallel', true, ...
