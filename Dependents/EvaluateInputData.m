@@ -35,22 +35,15 @@ function State = EvaluateInputData(State)
     State.Dependents.Data.ChargeTrappingShiftColumns = find(contains(DataHeader, 'Conductance') | contains(DataHeader, 'Seebeck'));
     State.Dependents.Data.ChargeTrappingShiftSize = [State.Dependents.Data.NumTypes, State.Dependents.Data.MaxNumTests];
     State.Dependents.Data.ChargeTrappingShiftCount = prod(State.Dependents.Data.ChargeTrappingShiftSize);
-    ChargeTrappingShiftScale = str2double(string(InputData(find(InputLabels == "# Scale", 1), State.Dependents.Data.ChargeTrappingShiftColumns)));
-    ChargeTrappingShiftScale(end + 1 : prod(State.Dependents.Data.ChargeTrappingShiftSize)) = NaN;
-    ChargeTrappingShiftScale = reshape(ChargeTrappingShiftScale, fliplr(State.Dependents.Data.ChargeTrappingShiftSize))';
-    ChargeTrappingShiftInitialValue = str2double(string(InputData(find(InputLabels == "# Initial Value", 1), State.Dependents.Data.ChargeTrappingShiftColumns)));
-    ChargeTrappingShiftInitialValue(end + 1 : prod(State.Dependents.Data.ChargeTrappingShiftSize)) = NaN;
-    ChargeTrappingShiftInitialValue = reshape(ChargeTrappingShiftInitialValue, fliplr(State.Dependents.Data.ChargeTrappingShiftSize))';
-    ChargeTrappingShiftLowerBound = str2double(string(InputData(find(InputLabels == "# Lower Bound", 1), State.Dependents.Data.ChargeTrappingShiftColumns)));
-    ChargeTrappingShiftLowerBound(end + 1 : prod(State.Dependents.Data.ChargeTrappingShiftSize)) = NaN;
-    ChargeTrappingShiftLowerBound = reshape(ChargeTrappingShiftLowerBound, fliplr(State.Dependents.Data.ChargeTrappingShiftSize))';
-    ChargeTrappingShiftUpperBound = str2double(string(InputData(find(InputLabels == "# Upper Bound", 1), State.Dependents.Data.ChargeTrappingShiftColumns)));
-    ChargeTrappingShiftUpperBound(end + 1 : prod(State.Dependents.Data.ChargeTrappingShiftSize)) = NaN;
-    ChargeTrappingShiftUpperBound = reshape(ChargeTrappingShiftUpperBound, fliplr(State.Dependents.Data.ChargeTrappingShiftSize))';
-    ChargeTrappingShiftUnit = string(InputData(find(InputLabels == "# Unit", 1), State.Dependents.Data.ChargeTrappingShiftColumns));
-    ChargeTrappingShiftUnit(end + 1 : prod(State.Dependents.Data.ChargeTrappingShiftSize)) = "";
+    ChargeTrappingShiftRows = arrayfun(@(Label) find(InputLabels == Label, 1), ["# Scale", "# Initial Value", "# Lower Bound", "# Upper Bound", "# Unit"]);
+    ChargeTrappingShiftValues = string(InputData(ChargeTrappingShiftRows, State.Dependents.Data.ChargeTrappingShiftColumns));
+    ChargeTrappingShiftNumeric = str2double(ChargeTrappingShiftValues(1 : 4, :));
+    ChargeTrappingShiftNumeric(:, end + 1 : State.Dependents.Data.ChargeTrappingShiftCount) = NaN;
+    ChargeTrappingShiftNumeric = permute(reshape(ChargeTrappingShiftNumeric.', [fliplr(State.Dependents.Data.ChargeTrappingShiftSize), 4]), [2, 1, 3]);
+    ChargeTrappingShiftUnit = ChargeTrappingShiftValues(5, :);
+    ChargeTrappingShiftUnit(end + 1 : State.Dependents.Data.ChargeTrappingShiftCount) = "";
     ChargeTrappingShiftUnit = reshape(ChargeTrappingShiftUnit, fliplr(State.Dependents.Data.ChargeTrappingShiftSize))';
     %% 8. Reshape the fitting definitions for the charge trapping shift.
     State.Dependents.FittingDefinitions.ChargeTrappingShift = reshape(arrayfun(@(ScaleValue, InitialValue, LowerBound, UpperBound, Unit){ScaleValue, InitialValue, LowerBound, UpperBound, Unit}, ...
-        ChargeTrappingShiftScale, ChargeTrappingShiftInitialValue, ChargeTrappingShiftLowerBound, ChargeTrappingShiftUpperBound, ChargeTrappingShiftUnit, 'UniformOutput', false), [], 1);
+        ChargeTrappingShiftNumeric(:, :, 1), ChargeTrappingShiftNumeric(:, :, 2), ChargeTrappingShiftNumeric(:, :, 3), ChargeTrappingShiftNumeric(:, :, 4), ChargeTrappingShiftUnit, 'UniformOutput', false), [], 1);
 end
