@@ -5,9 +5,9 @@ function State = EvaluateOptimiser(State)
     %% 2. Parse the fitting definition requirements for the current combination.
     Requirements = {'Any'};
     if(strcmp(State.Dependents.GapType, 'Soft'))
-        Requirements = [Requirements, {'Soft'}];
+        Requirements{end + 1} = 'Soft';
     end
-    Requirements = [Requirements, {State.Dependents.Model}];
+    Requirements{end + 1} = State.Dependents.Model;
     %% 3. Initialise storage for the parsed fitting definitions.
     Names = {};
     Scales = {};
@@ -17,25 +17,24 @@ function State = EvaluateOptimiser(State)
     Units = {};
     %% 4. Parse the fitting definitions selected by the current requirements.
     for idxRequirement = 1 : numel(Requirements)
-        CurrentDefinitions = State.Variables.FittingDefinitions.(Requirements{idxRequirement});
-        CurrentNames = fieldnames(CurrentDefinitions);
-        for idxName = 1 : numel(CurrentNames)
-            ParameterName = CurrentNames{idxName};
-            ParameterRow = CurrentDefinitions.(ParameterName);
-            if(isnumeric(ParameterRow{1}) && ~isscalar(ParameterRow{1}))
-                Names{end + 1, 1} = arrayfun(@(idxElement) sprintf('%s(%d)', ParameterName, idxElement), (1 : numel(ParameterRow{1}))', 'UniformOutput', false);
-                Scales{end + 1, 1} = ParameterRow{1}(:);
-                InitialValues{end + 1, 1} = ParameterRow{2}(:);
-                LowerBounds{end + 1, 1} = ParameterRow{3}(:);
-                UpperBounds{end + 1, 1} = ParameterRow{4}(:);
-                Units{end + 1, 1} = repmat({ParameterRow{5}}, numel(ParameterRow{1}), 1);
+        Definition = State.Variables.FittingDefinitions.(Requirements{idxRequirement});
+        ParameterNames = fieldnames(Definition);
+        for idxName = 1 : numel(ParameterNames)
+            Values = Definition.(ParameterNames{idxName});
+            if(isnumeric(Values{1}) && ~isscalar(Values{1}))
+                Names{end + 1, 1} = arrayfun(@(idxElement) sprintf('%s(%d)', ParameterNames{idxName}, idxElement), (1 : numel(Values{1}))', 'UniformOutput', false);
+                Scales{end + 1, 1} = Values{1}(:);
+                InitialValues{end + 1, 1} = Values{2}(:);
+                LowerBounds{end + 1, 1} = Values{3}(:);
+                UpperBounds{end + 1, 1} = Values{4}(:);
+                Units{end + 1, 1} = repmat({Values{5}}, numel(Values{1}), 1);
             else
-                Names{end + 1, 1} = {ParameterName};
-                Scales{end + 1, 1} = ParameterRow{1};
-                InitialValues{end + 1, 1} = ParameterRow{2};
-                LowerBounds{end + 1, 1} = ParameterRow{3};
-                UpperBounds{end + 1, 1} = ParameterRow{4};
-                Units{end + 1, 1} = {ParameterRow{5}};
+                Names{end + 1, 1} = ParameterNames(idxName);
+                Scales{end + 1, 1} = Values{1};
+                InitialValues{end + 1, 1} = Values{2};
+                LowerBounds{end + 1, 1} = Values{3};
+                UpperBounds{end + 1, 1} = Values{4};
+                Units{end + 1, 1} = Values(5);
             end
         end
     end
@@ -55,6 +54,12 @@ function State = EvaluateOptimiser(State)
     State.Dependents.FittingDefinitions.Units = vertcat(Units{:});
     %% 7. Setup the optimiser options for the current solver.
     State.Dependents.Optimiser.Solver = State.Dependents.Solver;
+    State.Dependents.Optimiser.Options.fmincon = optimoptions('fmincon', 'Display', 'iter', 'UseParallel', true, ...
+        'MaxIterations', State.Variables.Solvers.fmincon.MaxIterations, ...
+        'MaxFunctionEvaluations', State.Variables.Solvers.fmincon.MaxFunctionEvaluations, ...
+        'StepTolerance', State.Variables.Solvers.fmincon.StepTolerance, ...
+        'OptimalityTolerance', State.Variables.Solvers.fmincon.OptimalityTolerance, ...
+        'Algorithm', 'sqp');
     switch(State.Dependents.Solver)
         case 'particleswarm'
             State.Dependents.Optimiser.Options.particleswarm = optimoptions('particleswarm', 'Display', 'iter', 'UseParallel', true, ...
@@ -62,12 +67,6 @@ function State = EvaluateOptimiser(State)
                 'MaxStallIterations', State.Variables.Solvers.particleswarm.MaxStallIterations, ...
                 'FunctionTolerance', State.Variables.Solvers.particleswarm.FunctionTolerance, ...
                 'HybridFcn', 'fmincon');
-            State.Dependents.Optimiser.Options.fmincon = optimoptions('fmincon', 'Display', 'iter', 'UseParallel', true, ...
-                'MaxIterations', State.Variables.Solvers.fmincon.MaxIterations, ...
-                'MaxFunctionEvaluations', State.Variables.Solvers.fmincon.MaxFunctionEvaluations, ...
-                'StepTolerance', State.Variables.Solvers.fmincon.StepTolerance, ...
-                'OptimalityTolerance', State.Variables.Solvers.fmincon.OptimalityTolerance, ...
-                'Algorithm', 'sqp');
         case 'ga'
             State.Dependents.Optimiser.Options.ga = optimoptions('ga', 'Display', 'iter', 'UseParallel', true, ...
                 'MaxGenerations', State.Variables.Solvers.ga.MaxGenerations, ...
@@ -75,18 +74,5 @@ function State = EvaluateOptimiser(State)
                 'PopulationSize', State.Variables.Solvers.ga.PopulationSize, ...
                 'FunctionTolerance', State.Variables.Solvers.ga.FunctionTolerance, ...
                 'HybridFcn', 'fmincon');
-            State.Dependents.Optimiser.Options.fmincon = optimoptions('fmincon', 'Display', 'iter', 'UseParallel', true, ...
-                'MaxIterations', State.Variables.Solvers.fmincon.MaxIterations, ...
-                'MaxFunctionEvaluations', State.Variables.Solvers.fmincon.MaxFunctionEvaluations, ...
-                'StepTolerance', State.Variables.Solvers.fmincon.StepTolerance, ...
-                'OptimalityTolerance', State.Variables.Solvers.fmincon.OptimalityTolerance, ...
-                'Algorithm', 'sqp');
-        case 'fmincon'
-            State.Dependents.Optimiser.Options.fmincon = optimoptions('fmincon', 'Display', 'iter', 'UseParallel', true, ...
-                'MaxIterations', State.Variables.Solvers.fmincon.MaxIterations, ...
-                'MaxFunctionEvaluations', State.Variables.Solvers.fmincon.MaxFunctionEvaluations, ...
-                'StepTolerance', State.Variables.Solvers.fmincon.StepTolerance, ...
-                'OptimalityTolerance', State.Variables.Solvers.fmincon.OptimalityTolerance, ...
-                'Algorithm', 'sqp');
     end
 end
