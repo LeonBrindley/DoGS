@@ -12,6 +12,8 @@ function State = UpdateVisibleSolvers(State)
     UpdateVisibleRows(Table, VisibleRequirements);
     %% 5. If 'fmincon' is not used as a primary function, hide NumberOfStartPoints accordingly.
     if(~any(strcmp(State.Variables.Options.Solvers, 'fmincon')))
-        Table.Data(strcmp(Table.Data(:, 2), 'fmincon') & strcmp(Table.Data(:, 1), 'NumberOfStartPoints'), :) = [];
+        RowMask = strcmp(Table.Data(:, 2), 'fmincon') & strcmp(Table.Data(:, 1), 'NumberOfStartPoints');
+        Table.Data(RowMask, :) = [];
+        Table.UserData.VisibleRows(RowMask) = [];
     end
 end
