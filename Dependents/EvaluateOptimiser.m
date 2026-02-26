@@ -15,21 +15,15 @@ function State = EvaluateOptimiser(State)
         ParameterNames = fieldnames(State.Variables.FittingDefinitions.(Requirements{idxRequirement}));
         for idxName = 1 : numel(ParameterNames)
             Values = State.Variables.FittingDefinitions.(Requirements{idxRequirement}).(ParameterNames{idxName});
-            if(isnumeric(Values{1}) && ~isscalar(Values{1}))
-                Parsed.Names{end + 1, 1} = arrayfun(@(idxElement) sprintf('%s(%d)', ParameterNames{idxName}, idxElement), (1 : numel(Values{1}))', 'UniformOutput', false);
-                Parsed.Scales{end + 1, 1} = Values{1}(:);
-                Parsed.InitialValues{end + 1, 1} = Values{2}(:);
-                Parsed.LowerBounds{end + 1, 1} = Values{3}(:);
-                Parsed.UpperBounds{end + 1, 1} = Values{4}(:);
-                Parsed.Units{end + 1, 1} = repmat({Values{5}}, numel(Values{1}), 1);
-            else
-                Parsed.Names{end + 1, 1} = ParameterNames(idxName);
-                Parsed.Scales{end + 1, 1} = Values{1};
-                Parsed.InitialValues{end + 1, 1} = Values{2};
-                Parsed.LowerBounds{end + 1, 1} = Values{3};
-                Parsed.UpperBounds{end + 1, 1} = Values{4};
-                Parsed.Units{end + 1, 1} = Values(5);
+            Parsed.Names{end + 1, 1} = arrayfun(@(idxElement) sprintf('%s(%d)', ParameterNames{idxName}, idxElement), (1 : numel(Values{1}))', 'UniformOutput', false);
+            if(isscalar(Values{1}))
+                Parsed.Names{end, 1} = ParameterNames(idxName);
             end
+            Parsed.Scales{end + 1, 1} = Values{1}(:);
+            Parsed.InitialValues{end + 1, 1} = Values{2}(:);
+            Parsed.LowerBounds{end + 1, 1} = Values{3}(:);
+            Parsed.UpperBounds{end + 1, 1} = Values{4}(:);
+            Parsed.Units{end + 1, 1} = repmat({Values{5}}, numel(Values{1}), 1);
         end
     end
     Parsed.Names{end + 1, 1} = arrayfun(@(idxShift) sprintf('ChargeTrappingShift(%d)', idxShift), (1 : State.Dependents.Data.ChargeTrappingShiftCount)', 'UniformOutput', false);
