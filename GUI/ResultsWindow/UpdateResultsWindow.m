@@ -39,7 +39,7 @@ function UpdateResultsWindow(State)
     set(State.ResultsWindow.Axes(2), 'FontSize', 14, 'FontName', 'Helvetica', 'LineWidth', 1.5, 'Box', 'on', ...
         'TickDir', 'both', 'XMinorTick', 'on', 'YMinorTick', 'on', 'TickLabelInterpreter', 'tex');
     xlabel(State.ResultsWindow.Axes(2), '{\Delta}{\epsilon} [eV]', 'Interpreter', 'tex', 'FontSize', 18, 'FontName', 'Helvetica');
-    ylabel(State.ResultsWindow.Axes(2), 'V_{FG} [V]', 'Interpreter', 'tex', 'FontSize', 18, 'FontName', 'Helvetica');
+    ylabel(State.ResultsWindow.Axes(2), 'V_{FG}({\Delta}{\epsilon}) [V]', 'Interpreter', 'tex', 'FontSize', 18, 'FontName', 'Helvetica');
     %% 2E. Add the grid and the legend.
     grid(State.ResultsWindow.Axes(2), 'on');
     Handles = Handles(isgraphics(Handles));
