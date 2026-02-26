@@ -22,8 +22,8 @@ function UpdateResultsWindow(State)
     hold(State.ResultsWindow.Axes(2), 'on');
     %% 2B. Specify the colours, handles and labels for each {Type, Test}.
     Colours = lines(State.Dependents.Data.NumPlots);
-    Handles = gobjects(1, numel(Colours));
-    Legends = cell(1, numel(Colours));
+    Handles = gobjects(1, size(Colours, 1));
+    Legends = cell(1, size(Colours, 1));
     Index = 1;
     %% 2C. Iterate over each {Type, Test}.
     for Type = 1 : State.Dependents.Data.NumTypes
