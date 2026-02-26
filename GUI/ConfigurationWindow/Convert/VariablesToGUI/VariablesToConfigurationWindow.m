@@ -8,4 +8,8 @@ function State = VariablesToConfigurationWindow(State)
     State = VariablesToFittingDefinitionsSection(State);
     %% 4. Read State.Variables into the solvers section.
     State = VariablesToSolversSection(State);
+    %% 5. Update the visible fitting definitions.
+    State = UpdateVisibleFittingDefinitions(State);
+    %% 6. Update the visible solvers.
+    State = UpdateVisibleSolvers(State);
 end
