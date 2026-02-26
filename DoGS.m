@@ -10,3 +10,5 @@ State = ConfigureConstants(State);
 State = ResetVariables(State);
 %% 6. Build the configuration window.
 State = BuildConfigurationWindow(State);
+%% 7. Build the results window.
+State = BuildConfigurationWindow(State);
