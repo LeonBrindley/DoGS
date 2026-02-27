@@ -34,15 +34,17 @@ function State = EvaluateOptimiser(State)
             %% 3I. Replicate the parameter unit once per parsed element.
             Parsed.Units{end + 1, 1} = repmat({Values{5}}, numel(Values{1}), 1);
         end
+        if(idxRequirement == 1)
+            %% 3J. Append charge trapping shift names based on the inferred shift count.
+            Parsed.Names{end + 1, 1} = arrayfun(@(idxShift) sprintf('ChargeTrappingShift(%d)', idxShift), (1 : State.Dependents.Data.ChargeTrappingShiftCount)', 'UniformOutput', false);
+            %% 3K. Append charge trapping shift scales, initial values, bounds and units.
+            Parsed.Scales{end + 1, 1} = cellfun(@(Parameter) Parameter{1}, State.Dependents.FittingDefinitions.ChargeTrappingShift);
+            Parsed.InitialValues{end + 1, 1} = cellfun(@(Parameter) Parameter{2}, State.Dependents.FittingDefinitions.ChargeTrappingShift);
+            Parsed.LowerBounds{end + 1, 1} = cellfun(@(Parameter) Parameter{3}, State.Dependents.FittingDefinitions.ChargeTrappingShift);
+            Parsed.UpperBounds{end + 1, 1} = cellfun(@(Parameter) Parameter{4}, State.Dependents.FittingDefinitions.ChargeTrappingShift);
+            Parsed.Units{end + 1, 1} = cellfun(@(Parameter) Parameter{5}, State.Dependents.FittingDefinitions.ChargeTrappingShift, 'UniformOutput', false);
+        end
     end
-    %% 3J. Append charge trapping shift names based on the inferred shift count.
-    Parsed.Names{end + 1, 1} = arrayfun(@(idxShift) sprintf('ChargeTrappingShift(%d)', idxShift), (1 : State.Dependents.Data.ChargeTrappingShiftCount)', 'UniformOutput', false);
-    %% 3K. Append charge trapping shift scales, initial values, bounds and units.
-    Parsed.Scales{end + 1, 1} = cellfun(@(Parameter) Parameter{1}, State.Dependents.FittingDefinitions.ChargeTrappingShift);
-    Parsed.InitialValues{end + 1, 1} = cellfun(@(Parameter) Parameter{2}, State.Dependents.FittingDefinitions.ChargeTrappingShift);
-    Parsed.LowerBounds{end + 1, 1} = cellfun(@(Parameter) Parameter{3}, State.Dependents.FittingDefinitions.ChargeTrappingShift);
-    Parsed.UpperBounds{end + 1, 1} = cellfun(@(Parameter) Parameter{4}, State.Dependents.FittingDefinitions.ChargeTrappingShift);
-    Parsed.Units{end + 1, 1} = cellfun(@(Parameter) Parameter{5}, State.Dependents.FittingDefinitions.ChargeTrappingShift, 'UniformOutput', false);
     %% 3L. Flatten parsed fitting definitions into State.Dependents.FittingDefinitions.
     for idxField = 1 : numel(ParsedFields)
         State.Dependents.FittingDefinitions.(ParsedFields{idxField}) = vertcat(Parsed.(ParsedFields{idxField}){:});
