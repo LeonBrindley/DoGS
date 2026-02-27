@@ -10,9 +10,9 @@ function State = GridSectionToVariables(State, PreviousGrid)
         RowValue = Data{RowIndex, 2};
         %% 2C. Validate the row.
         if(strcmp(RowName, 'Increment') || strcmp(RowName, 'Maximum'))
-            RowValue = ValidateScalar(RowValue, PreviousGrid.(RowName){1}, RowName, 'Positive');
+            RowValue = ValidateScalar(RowValue, 'Positive', RowName, PreviousGrid.(RowName){1});
         elseif(strcmp(RowName, 'Minimum'))
-            RowValue = ValidateScalar(RowValue, PreviousGrid.(RowName){1}, RowName, 'Negative');
+            RowValue = ValidateScalar(RowValue, 'Negative', RowName, PreviousGrid.(RowName){1});
         end
         %% 2D. Read the unit.
         RowUnit = Data{RowIndex, 3};

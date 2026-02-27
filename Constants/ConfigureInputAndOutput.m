@@ -1,7 +1,7 @@
 %% Function: Configure the input and output properties.
 function State = ConfigureInputAndOutput(State)
     %% 1. Configure the root directory.
-    State.Constants.RootDirectory = fileparts(fileparts(evalin('caller', 'mfilename(''fullpath'')')));
+    State.Constants.RootDirectory = fileparts(evalin('caller', 'mfilename(''fullpath'')'));
     %% 2. Configure the input directory.
     State.Constants.InputDirectory = fullfile(State.Constants.RootDirectory, 'Input');
     if(~isfolder(State.Constants.InputDirectory))

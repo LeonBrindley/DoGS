@@ -5,7 +5,7 @@ function OptimiseButtonCallback(Figure)
     %% 2. Optimise each of the models.
     for idxCombination = 0 : State.Variables.NumCombinations - 1
         %% 2A. Evaluate the sub-struct State.Dependents.
-        State.Combination = idxCombination; State = ParseDependents(State);
+        State.Combination = idxCombination; State = EvaluateDependents(State);
         %% 2B. Optimise the chosen model.
     end
     %% 3. Update the configuration window figure user data.

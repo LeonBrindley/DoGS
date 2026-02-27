@@ -23,12 +23,12 @@ function State = SolversSectionToVariables(State, PreviousSolvers)
         end
         %% 2D. Validate the row.
         if(isfield(PreviousSolvers, RowRequirement) && isfield(PreviousSolvers.(RowRequirement), RowName))
-            Data(RowIndex, 3) = ValidateScalar(Data(RowIndex, 3), RowCriteria, sprintf('%s.%s', RowRequirement, RowName), PreviousSolvers.(RowRequirement).(RowName));
+            Data{RowIndex, 3} = ValidateScalar(Data{RowIndex, 3}, RowCriteria, sprintf('%s.%s', RowRequirement, RowName), PreviousSolvers.(RowRequirement).(RowName));
         else
-            Data(RowIndex, 3) = ValidateScalar(Data(RowIndex, 3), RowCriteria, sprintf('%s.%s', RowRequirement, RowName));
+            Data{RowIndex, 3} = ValidateScalar(Data{RowIndex, 3}, RowCriteria, sprintf('%s.%s', RowRequirement, RowName));
         end
         %% 2E. Write the row.
-        State.Variables.Solvers.(RowRequirement).(RowName) = Data(RowIndex, 3);
+        State.Variables.Solvers.(RowRequirement).(RowName) = Data{RowIndex, 3};
         %% 2F. Convert the value from a numeric value to a string.
         Data{RowIndex, 3} = num2str(Data{RowIndex, 3});
     end
